@@ -17,31 +17,28 @@
  */
 package org.apache.beam.sdk.tpcds;
 
-import org.apache.beam.sdk.Pipeline;
 import org.apache.beam.sdk.PipelineResult;
-import java.util.concurrent.Callable;
+import org.apache.beam.sdk.options.PipelineOptions;
 
-/**
- * To fulfill multi-threaded execution
- */
-public class TpcdsRun implements Callable<TpcdsRunResult> {
-    private final Pipeline pipeline;
+public class TpcdsRunResult {
+    private double elapsedTime;
+    private PipelineOptions pipelineOptions;
+    private PipelineResult pipelineResult;
 
-    public TpcdsRun (Pipeline pipeline) {
-        this.pipeline = pipeline;
+    public TpcdsRunResult(double elapsedTime, PipelineOptions pipelineOptions, PipelineResult pipelineResult) {
+        this.elapsedTime = elapsedTime;
+        this.pipelineOptions = pipelineOptions;
+        this.pipelineResult = pipelineResult;
     }
 
-    @Override
-    public TpcdsRunResult call() {
-        Long startTimeStamp = System.currentTimeMillis();
-        PipelineResult pipelineResult = pipeline.run();
-        pipelineResult.waitUntilFinish();
-        Long endTimeStamp = System.currentTimeMillis();
+    public double getElapsedTime() { return elapsedTime; }
 
-        double elapsedTime = (endTimeStamp - startTimeStamp) / 1000.0;
+    public PipelineOptions getPipelineOptions() { return pipelineOptions; }
 
-        TpcdsRunResult tpcdsRunResult = new TpcdsRunResult(elapsedTime, pipeline.getOptions(), pipelineResult);
+    public PipelineResult getPipelineResult() { return pipelineResult; }
 
-        return tpcdsRunResult;
+    public String getJobName() {
+        PipelineOptions pipelineOptions = getPipelineOptions();
+        return pipelineOptions.getJobName();
     }
 }

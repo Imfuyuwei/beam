@@ -96,7 +96,7 @@ public class SqlTransformRunner {
 
         // Using ExecutorService and CompletionService to fulfill multi-threading functionality
         ExecutorService executor = Executors.newFixedThreadPool(nThreads);
-        CompletionService<PipelineResult> completion = new ExecutorCompletionService<>(executor);
+        CompletionService<TpcdsRunResult> completion = new ExecutorCompletionService<>(executor);
 
         // Make an array of pipelines, each pipeline is responsible for running a corresponding query.
         Pipeline[] pipelines = new Pipeline[queryNameArr.length];
@@ -131,6 +131,12 @@ public class SqlTransformRunner {
                             .withNumShards(1));
 
             completion.submit(new TpcdsRun(pipelines[i]));
+        }
+
+        for (int i = 0; i < queryNameArr.length; i++) {
+            TpcdsRunResult tpcdsRunResult = completion.take().get();
+            System.out.print(tpcdsRunResult.getJobName() + ": ");
+            System.out.println(tpcdsRunResult.getElapsedTime());
         }
 
         executor.shutdown();

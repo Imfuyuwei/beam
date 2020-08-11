@@ -102,7 +102,7 @@ public class BeamSqlEnvRunner {
 
         // Using ExecutorService and CompletionService to fulfill multi-threading functionality
         ExecutorService executor = Executors.newFixedThreadPool(nThreads);
-        CompletionService<PipelineResult> completion = new ExecutorCompletionService<>(executor);
+        CompletionService<TpcdsRunResult> completion = new ExecutorCompletionService<>(executor);
 
         // Directly create all tables and register them into inMemoryMetaStore before creating BeamSqlEnv object.
         registerAllTablesByInMemoryMetaStore(inMemoryMetaStore, dataSize);
