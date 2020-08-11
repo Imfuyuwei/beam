@@ -132,7 +132,7 @@ public class SqlTransformRunner {
 
             completion.submit(new TpcdsRun(pipelines[i]));
         }
-
+        
         for (int i = 0; i < queryNameArr.length; i++) {
             TpcdsRunResult tpcdsRunResult = completion.take().get();
             System.out.print(tpcdsRunResult.getJobName() + ": ");
