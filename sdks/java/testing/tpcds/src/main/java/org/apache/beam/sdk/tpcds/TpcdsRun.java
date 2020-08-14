@@ -33,14 +33,20 @@ public class TpcdsRun implements Callable<TpcdsRunResult> {
 
     @Override
     public TpcdsRunResult call() {
-        Long startTimeStamp = System.currentTimeMillis();
-        PipelineResult pipelineResult = pipeline.run();
-        pipelineResult.waitUntilFinish();
-        Long endTimeStamp = System.currentTimeMillis();
+        TpcdsRunResult tpcdsRunResult;
 
-        double elapsedTime = (endTimeStamp - startTimeStamp) / 1000.0;
+        try {
+            PipelineResult pipelineResult = pipeline.run();
+            long startTimeStamp = System.currentTimeMillis();
+            pipelineResult.waitUntilFinish();
+            long endTimeStamp = System.currentTimeMillis();
 
-        TpcdsRunResult tpcdsRunResult = new TpcdsRunResult(elapsedTime, pipeline.getOptions(), pipelineResult);
+            tpcdsRunResult = new TpcdsRunResult(true, startTimeStamp, endTimeStamp, pipeline.getOptions(), pipelineResult);
+        } catch (Exception e) {
+            // If the pipeline execution failed, return a result with failed status but don't interrupt other threads.
+            e.printStackTrace();
+            tpcdsRunResult = new TpcdsRunResult(false, 0, 0, pipeline.getOptions(), null);
+        }
 
         return tpcdsRunResult;
     }
